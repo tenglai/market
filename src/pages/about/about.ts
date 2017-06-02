@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+// @Component 装饰器
+import { Component } from '@angular/core'; // 核心模块
 import { NavController } from 'ionic-angular';
 
 @Component({

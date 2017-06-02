@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+// @Component 装饰器
+import { Component } from '@angular/core'; // 核心模块
 import { Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
