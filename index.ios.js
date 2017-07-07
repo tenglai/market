@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class newPro extends Component {
+export default class market extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('newPro', () => newPro);
+AppRegistry.registerComponent('market', () => market);
