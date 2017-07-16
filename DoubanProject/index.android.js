@@ -25,6 +25,7 @@ var BookList = require("./android_views/book/book_list");
 var MovieList = require("./android_views/movie/movie_list");
 
 // tab组件
+// npm install react-native-tab-navigator --save
 import TabNavigator from 'react-native-tab-navigator';
 
 // 隐藏状态栏
