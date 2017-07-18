@@ -4,11 +4,12 @@
 
 import React, { Component } from 'react';
 import {
-  Navigator,
   BackAndroid,
 } from 'react-native';
 import SplashScene from './SplashScene';
 import NavigatorRoute from './../common/NavigatorRoute';
+// 替代 Navigator 组件
+import CustomerComponents, { Navigator } from 'react-native-deprecated-custom-components'; // 引入
 
 var _navigator = null;
 export default class NavigatorRoot extends Component {
