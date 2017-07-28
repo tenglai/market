@@ -50,8 +50,13 @@ const styles = StyleSheet.create({
 	}
 });
 
+// 引入observer组件
+import { observer } from 'mobx-react/native';
+
+// 引入勾选框组件 Circle
 import Circle from '../components/Circle';
 
+@observer
 export default class Footer extends Component {
 	// 构造器  状态
 	// constructor(props) {
@@ -70,19 +75,20 @@ export default class Footer extends Component {
 		alert(checked);
 	};
 	render() {
+		const { cartData } = this.props;
 		return (
 			<View style={styles.root}>
 				<View style={styles.selectWrapper}>
 					<Circle onPress={this.selectAll} />
 					<Text style={styles.selectText}>全选</Text>
 				</View>
-				<Text>总计：￥</Text>
+				<Text>总计：￥{cartData.sum.get()}</Text>
 				<TouchableOpacity
 					// 状态不同显示的样式不同
 					style={styles.checkout}
 					onPress={this.checkout}
 				>
-					<Text style={styles.checkoutText}>去结算(0)</Text>
+					<Text style={styles.checkoutText}>去结算({cartData.count.get()})</Text>
 				</TouchableOpacity>
 			</View>
 		);

@@ -3,46 +3,36 @@
  */
 import React, { Component } from 'react';
 import {
-	AppState,
 	StyleSheet,
-	View,
-	Text,
-	TouchableOpacity
+	ScrollView
 } from 'react-native';
+
+// 引入Item组件
+import Item from './Item';
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		justifyContent: 'center',
-		flexDirection: 'row',
-		height: 44,
-		backgroundColor: '#F5F5F5',
-		justifyContent: 'space-between',
-	},
-	text: {
-		textAlign: 'center',
-		fontSize: 18,
-	},
-	back: {
-		fontSize: 30,
-		color: '#900',
-	},
-	right: {
-		fontSize: 30,
-		color: 'transparent',
 	}
 });
 
+// 引入购物车数据
+import cartData from '../logics/CartData';
+
 export default class ItemList extends Component {
-	goBack = () => {
-		// 通过解钩 获取传递的navigator
-		const { navigator } = this.props;
-		navigator.pop();
-	};
 	render() {
+		// 取出父组件传递的参数
+		const { cartData } = this.props;
+
+		// 动态创建组件
 		return (
-			<View style={styles.root}>
-			</View>
+			<ScrollView style={styles.root}>
+				{
+					cartData.map((data,index) => {
+						return <Item key={data.id} index={index} data={data} cartData={cartData} />
+					})
+				}
+			</ScrollView>
 		);
 	}
 }
