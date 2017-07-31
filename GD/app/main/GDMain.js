@@ -7,6 +7,7 @@ import {
   	Text,
   	View,
   	Image,
+  	Platform, // 用于区分运行平台
 } from 'react-native';
 
 // npm install react-native-deprecated-custom-components --save
@@ -39,9 +40,9 @@ export default class GD extends Component {
 			<TabNavigator.Item
 				selected={this.state.selectedTab === selectedTab}
 				title={title}
+				selectedTitleStyle={{color:'black'}}
 				renderIcon={() => <Image source={{uri:image}} style={styles.tabbarIconStyle} />}
 				renderSelectedIcon={() => <Image source={{uri:selectedImage}} style={styles.tabbarIconStyle} />}
-				badgeText="1"
 				onPress={() => this.setState({ selectedTab: selectedTab })}>
 				{/*使用navigator导航*/}
 				<Navigator
