@@ -1,5 +1,5 @@
 /**
- * 首页
+ * 首页详情页
  */
 import React, { Component } from 'react';
 import {
@@ -11,25 +11,22 @@ import {
 } from 'react-native';
 
 // ES5
-var Shop = React.createClass({
+var HomeDetail = React.createClass({
     render() {
         return (
             <View style={styles.container}>
-                <TouchableOpacity onPress={()=>{this.pushToDetail()}}>
+                <TouchableOpacity onPress={()=>{this.popToHome()}}>
                     <Text style={styles.welcome}>
-                        Shop
+                        HomeDetail
                     </Text>
                 </TouchableOpacity>
             </View>
         );
     },
 
-    // 跳转到首页详细页
-    pushToDetail(){
-        this.props.navigator.push({
-            component:HomeDetail,   // 要跳转过去的组件
-            title:'首页详细页'
-        });
+    // 返回首页
+    popToHome(){
+        this.props.navigator.pop();
     }
 });
 
@@ -38,7 +35,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: 'red',
     },
     welcome: {
         fontSize: 20,
@@ -48,4 +45,4 @@ const styles = StyleSheet.create({
 });
 
 // 输出
-module.exports = Shop;
+module.exports = HomeDetail;

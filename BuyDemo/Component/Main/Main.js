@@ -8,17 +8,17 @@ import {
     Text,
     View,
     Image,
-    Platform  //判断当前运行的系统
+    Platform,  //判断当前运行的系统
 } from 'react-native';
 
 /*=============导入外部组件类==============*/
 import TabNavigator from 'react-native-tab-navigator';
+import CustomerComponents, { Navigator } from 'react-native-deprecated-custom-components';
 
 var Home = require('../Home/Home');
 var Shop = require('../Shop/Shop');
 var Mine = require('../Mine/Mine');
 var More = require('../More/More');
-
 
 // ES5
 var Main = React.createClass({
@@ -33,63 +33,54 @@ var Main = React.createClass({
         return (
             <TabNavigator>
                 {/*--首页--*/}
-                <TabNavigator.Item
-                    title="首页"
-                    renderIcon={() => <Image source={{uri:'tabbar_abroad_30x30'}} style={styles.iconStyle} />}
-                    renderSelectedIcon={() => <Image source={{uri:'tabbar_abroad_selected_30x30'}} style={styles.selectedIconStyle} />}
-                    badgeText="1"
-                    selected={this.state.selectedTab === 'home'}
-                    onPress={() => this.setState({ selectedTab: 'home' })}
-                >
-                    <Home />
-                </TabNavigator.Item>
+                {this.renderTabBarItem('首页','icon_tabbar_homepage','icon_tabbar_homepage_selected','home','首页',Home,1)}
                 {/*--商家--*/}
-                <TabNavigator.Item
-                    title="商家"
-                    renderIcon={() => <Image source={{uri:'tabbar_home_30x30'}} style={styles.iconStyle} />}
-                    renderSelectedIcon={() => <Image source={{uri:'tabbar_home_selected_30x30'}} style={styles.selectedIconStyle} />}
-                    badgeText="1"
-                    selected={this.state.selectedTab === 'shop'}
-                    onPress={() => this.setState({ selectedTab: 'shop' })}
-                >
-                    <Shop />
-                </TabNavigator.Item>
+                {this.renderTabBarItem('商家','icon_tabbar_merchant_normal','icon_tabbar_merchant_selected','shop','商家',Shop,2)}
                 {/*--我的--*/}
-                <TabNavigator.Item
-                    title="我的"
-                    renderIcon={() => <Image source={{uri:'tabbar_rank_30x30'}} style={styles.iconStyle} />}
-                    renderSelectedIcon={() => <Image source={{uri:'tabbar_rank_selected_30x30'}} style={styles.selectedIconStyle} />}
-                    badgeText="1"
-                    selected={this.state.selectedTab === 'mine'}
-                    onPress={() => this.setState({ selectedTab: 'mine' })}
-                >
-                    <Mine />
-                </TabNavigator.Item>
+                {this.renderTabBarItem('我的','icon_tabbar_mine','icon_tabbar_mine_selected','mine','我的',Mine)}
                 {/*--更多--*/}
-                <TabNavigator.Item
-                    title="更多"
-                    renderIcon={() => <Image source={{uri:'tabbar_abroad_30x30'}} style={styles.iconStyle} />}
-                    renderSelectedIcon={() => <Image source={{uri:'tabbar_abroad_selected_30x30'}} style={styles.selectedIconStyle} />}
-                    badgeText="1"
-                    onPress={() => this.setState({ selectedTab: 'more' })}
-                    selected={this.state.selectedTab === 'more'}
-                >
-                    <More />
-                </TabNavigator.Item>
+                {this.renderTabBarItem('更多','icon_tabbar_misc','icon_tabbar_misc_selected','more','更多',More)}
             </TabNavigator>
         );
+    },
+
+    // 封装tabBarItem
+    renderTabBarItem(title,iconName,selectedIconName,selectedTab,componentName,component,badgeText){
+        return(
+            <TabNavigator.Item
+                title={title}
+                renderIcon={() => <Image source={{uri:iconName}} style={styles.iconStyle} />}
+                renderSelectedIcon={() => <Image source={{uri:selectedIconName}} style={styles.iconStyle} />}
+                selected={this.state.selectedTab === selectedTab}
+                onPress={() => this.setState({ selectedTab: selectedTab })}
+                selectedTitleStyle={styles.selectedTitleStyle} //tabBarItem选中的文字样式
+                badgeText={badgeText}
+            >
+                <Navigator
+                    initialRoute={{name: componentName, component:component}}
+                    configureScene={()=>{
+                            return Navigator.SceneConfigs.PushFromRight;
+                        }}
+                    renderScene={(route, navigator) =>{
+                            let Component = route.component;
+                            return <Component {...route.passProps} navigator={navigator} />
+                        }}
+                />
+            </TabNavigator.Item>
+        )
     }
 });
 
 const styles = StyleSheet.create({
+    // icon默认样式
     iconStyle:{
         width: Platform.OS === 'ios' ? 30 : 25,
         height:Platform.OS === 'ios' ? 30 : 25,
     },
-    selectedIconStyle:{
-        width:Platform.OS === 'ios' ? 30 : 25,
-        height:Platform.OS === 'ios' ? 30 : 25,
-    },
+    // tabBarItem选中的文字样式
+    selectedTitleStyle:{
+        color: 'rgba(212,97,0,1)',
+    }
 });
 
 // 输出
