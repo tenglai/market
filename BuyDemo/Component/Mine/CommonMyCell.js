@@ -44,7 +44,7 @@ var MyCell = React.createClass({
         return(
             <View style={{flexDirection:'row',alignItems:'center'}}>
                 {this.renderRightContent()}
-                <Image source={{uri:'icon_cell_rightArrow'}} style={{width:8, height:13, marginRight:8, marginLeft:5}} />
+                <Image source={{uri:'icon_cell_right_arrow'}} style={{width:8, height:13, marginRight:8, marginLeft:5}} />
             </View>
         )
     },

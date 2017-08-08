@@ -30,7 +30,7 @@ var TitleCell = React.createClass({
                     </View>
                     <View style={styles.rightViewStyle}>
                         <Text style={{color:'gray'}}>{this.props.rightTitle}</Text>
-                        <Image source={{uri:'icon_cell_rightArrow'}} style={{width:8,height:13,marginRight:10,marginLeft:5}} />
+                        <Image source={{uri:'icon_cell_right_arrow'}} style={{width:8,height:13,marginRight:10,marginLeft:5}} />
                     </View>
                 </View>
             </TouchableOpacity>

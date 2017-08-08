@@ -50,7 +50,7 @@ var CommonCell = React.createClass({
             return(
                 <View style={{flexDirection:'row',alignItems:'center'}}>
                     {this.renderRightTitle()}
-                    <Image source={{uri:'icon_cell_rightArrow'}} style={{width:8,height:13}} />
+                    <Image source={{uri:'icon_cell_right_arrow'}} style={{width:8,height:13}} />
                 </View>
             )
         }

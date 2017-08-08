@@ -35,7 +35,7 @@ var HeaderView = React.createClass({
                     <Text style={{fontSize:18,color:'white',fontWeight:'bold'}}>京东电商</Text>
                     <Image source={{uri:'avatar_vip'}} style={{width:17,height:17}} />
                 </View>
-                <Image source={{uri:'icon_cell_rightArrow'}} style={{width:8,height:13,marginRight:8}} />
+                <Image source={{uri:'icon_cell_right_arrow'}} style={{width:8,height:13,marginRight:8}} />
             </View>
         )
     },
