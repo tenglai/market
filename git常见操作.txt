@@ -1,0 +1,55 @@
+1.创建分支
+
+git branch ABC
+
+2.切换分支
+
+git checkout ABC
+
+3.删除本地分支
+
+git branch -d ABC
+
+4.删除远程分支
+
+git push origin :branch-name
+
+或者
+
+git branch -r -d origin/branch-name  
+
+5.查看本地分支
+
+git branch
+
+6.查看远程分支
+
+git branch -r
+
+7.查看本地分支和远程分支
+
+git branch -a
+
+8.比较分支和master分支的区别
+
+git diff branch1 branch2 --stat   // 显示出所有有差异的文件列表
+ 
+git diff branch1 branch2 文件名(带路径)   // 显示指定文件的详细差异
+
+git diff branch1 branch2                   // 显示出所有有差异的文件的详细差异
+
+9.合并分支和master分支
+
+git checkout ABC(当前分支)
+
+git merge master(要合并的分支)
+
+10.版本回退
+
+(1)使用Git log命令查看所有的历史版本，获取某个历史版本的id，假设查到历史版本的id是
+
+   139dcfaa558e3276b30b6b2e5cbbb9c00bbdca96	
+
+(2)git reset --hard 139dcfaa558e3276b30b6b2e5cbbb9c00bbdca96
+
+(3)git push -f -u origin master
