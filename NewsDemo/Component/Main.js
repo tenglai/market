@@ -59,12 +59,12 @@ var Main = React.createClass({
                 <Navigator
                     initialRoute={{name: componentName, component:component}}
                     configureScene={()=>{
-                            return Navigator.SceneConfigs.PushFromRight;
-                        }}
+                        return Navigator.SceneConfigs.PushFromRight;
+                    }}
                     renderScene={(route, navigator) =>{
-                            let Component = route.component;
-                            return <Component {...route.passProps} navigator={navigator} />
-                        }}
+                        let Component = route.component;
+                        return <Component {...route.passProps} navigator={navigator} />
+                    }}
                 />
             </TabNavigator.Item>
         )
