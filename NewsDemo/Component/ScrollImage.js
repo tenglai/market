@@ -1,3 +1,6 @@
+/**
+ * 滚动图
+ */
 import React, { Component } from 'react';
 import {
     AppRegistry,

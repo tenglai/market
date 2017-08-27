@@ -1,7 +1,6 @@
 /**
  * 新闻详情页
  */
-
 import React, { Component } from 'react';
 import {
     AppRegistry,
