@@ -1,7 +1,9 @@
 /**
  * 海淘折扣
  */
-import React, { Component } from 'react';
+import React, {
+    Component
+} from 'react';
 import {
     StyleSheet,
     Text,
