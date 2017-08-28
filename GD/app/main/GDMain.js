@@ -10,7 +10,8 @@ import {
     Text,
     View,
     Image,
-    Platform
+    Platform,
+    DeviceEventEmitter,
 } from 'react-native';
 
 // tab组件(第三方框架)
@@ -33,6 +34,7 @@ export default class GD extends Component {
         // 初始状态
         this.state = {
             selectedTab: 'home',
+            isHiddenTabBar:false,   // 是否隐藏tabbar
         };
     }
 
@@ -65,9 +67,29 @@ export default class GD extends Component {
         );
     }
 
+    tongZhi(data) {
+        this.setState({
+            isHiddenTabBar:data,
+        })
+    }
+
+    // 使用通知,进行隐藏和显示tabBar
+    componentDidMount() {
+        // 注册通知
+        this.subscription = DeviceEventEmitter.addListener('isHiddenTabBar', (data)=>{this.tongZhi(data)});
+    }
+
+    componentWillUnmount() {
+        // 销毁
+        this.subscription.remove();
+    }
+
     render() {
         return (
-            <TabNavigator>
+            <TabNavigator
+                tabBarStyle={this.state.isHiddenTabBar !== true ? {} : {height:0, overflow:'hidden'}}
+                sceneStyle={this.state.isHiddenTabBar !== true ? {} : {paddingBottom:0}}
+            >
                 { /* 首页 */ }
                 {this.renderTabBarItem("首页", 'home', 'tabbar_home_30x30', 'tabbar_home_selected_30x30', Home)} 
                 { /* 海淘 */ } 
