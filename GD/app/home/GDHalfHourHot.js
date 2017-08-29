@@ -20,6 +20,13 @@ const {width, height} = Dimensions.get('window');
 import CommunalNavBar from '../main/GDCommunalNavBar';
 // 引入 cell
 import CommunalHotCell from '../main/GDCommunalHotCell';
+// 引入 空白页组件
+import NoDataView from '../main/GDNoDataView';
+// 引入 下拉刷新组件
+import {PullList} from 'react-native-pull';
+
+// 引入 HTTP封装组件
+import HTTPBase from '../http/HTTPBase';
 
 export default class GDHalfHourHot extends Component {
 
@@ -29,22 +36,51 @@ export default class GDHalfHourHot extends Component {
         // 初始状态
         this.state = {
             dataSource: new ListView.DataSource({rowHasChanged:(r1, r2) => r1 !== r2}), // 数据源 优化
+            loaded: false, // 用于判断是否显示空白页
         };
         // 绑定
         this.fetchData = this.fetchData.bind(this);
     }
 
     // 网络请求
-    fetchData() {
-        fetch('http://guangdiu.com/api/gethots.php')  // 请求地址
-            .then((response) => response.json())  // 定义名称 将数据转为json格式
-            .then((responseData) => { // 处理数据
-                // 修改dataSource的值
+    fetchData(resolve) {
+
+        // 测试没用数据的情况
+        // setTimeout(() => {
+        //     fetch('http://guangdiu.com/api/gethots.php')  // 请求地址
+        //     .then((response) => response.json())  // 定义名称 将数据转为json格式
+        //     .then((responseData) => { // 处理数据
+        //         // 修改dataSource的值
+        //         this.setState({
+        //             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
+        //             loaded:true,
+        //         });
+        //         // 关闭下来刷新动画
+        //         if (resolve !== undefined) {
+        //             // 使用定时器 延时关闭动画
+        //             setTimeout(() => {
+        //                 resolve();
+        //             },1000);
+        //         }
+        //     })
+        //     .done(); // 结束
+        // });
+
+        HTTPBase.get('http://guangdiu.com/api/gethots.php')
+            .then((responseData) => {
                 this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(responseData.data)
+                    dataSource: this.state.dataSource.cloneWithRows(responseData.data),
+                    loaded:true,
                 });
+                if (resolve !== undefined){
+                    setTimeout(() => {
+                        resolve();  // 关闭动画
+                    }, 1000);
+                }
             })
-            .done() // 结束
+            .catch((error) => {
+
+            })
     }
 
     // 跳回首页
@@ -67,6 +103,41 @@ export default class GDHalfHourHot extends Component {
             >
                 <Text style={styles.navbarRightItemStyle}>关闭</Text>
             </TouchableOpacity>
+        );
+    }
+
+    // 根据网络状态决定是否渲染 listView
+    renderListView() {
+        if(this.state.loaded === false) {
+            // 显示空白页
+            return(
+                <NoDataView />
+            );
+        }else{
+            return(
+                <PullList   // 将ListView 改为 PullList
+                    // 下拉刷新
+                    onPullRelease={(resolve) => this.fetchData(resolve)}
+                    // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染
+                    dataSource={this.state.dataSource} 
+                    renderRow={this.renderRow}
+                    // 隐藏水平线
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.listViewStyle}
+                    initialListSize={5}
+                    // 返回 listView 头部
+                    renderHeader={this.renderHeader}
+                />
+            );
+        }
+    }
+
+    // 返回 listView 头部
+    renderHeader() {
+        return(
+            <View style={styles.headerPromptStyle}>
+                <Text>根据每条折扣的点击进行统计,每5分钟更新一次</Text>
+            </View>
         );
     }
 
@@ -106,18 +177,8 @@ export default class GDHalfHourHot extends Component {
                     rightItem = {() => this.renderRightItem()}
                 />
 
-                {/* 顶部提示 */}
-                <View style={styles.headerPromptStyle}>
-                    <Text>根据每条折扣的点击进行统计,每5分钟更新一次</Text>
-                </View>
-
-                {/* 商品列表 */}
-                <ListView
-                    dataSource={this.state.dataSource}  // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染、
-                    renderRow={this.renderRow}
-                    showsHorizontalScrollIndicator={false} // 隐藏水平线
-                    style={styles.listViewStyle}
-                />
+                {/* 根据网络状态决定是否渲染 listView */}
+                {this.renderListView()}
             </View>
         );
     }
@@ -150,5 +211,5 @@ const styles = StyleSheet.create({
 
     listViewStyle: {
         width:width,
-    }
+    },
 });

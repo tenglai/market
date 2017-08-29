@@ -25,8 +25,8 @@ export default class GDCommunalHotCell extends Component {
     render() {
         return (
             <View style={styles.container}>
-            	{/* 左边的图片 */}
-            	<Image source={{uri:this.props.image}} style={styles.imageStyle} />
+            	{/* 左边的图片 设置占位图 */}
+                <Image source={{uri:this.props.image === '' ? 'defaullt_thumb_250x250' : this.props.image}} style={styles.imageStyle} />
             	{/* 中间的文字 */}
             	<View>
             		<Text numberOfLines={3} style={styles.titleStyle}>{this.props.title}</Text>

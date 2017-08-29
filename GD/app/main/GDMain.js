@@ -38,6 +38,19 @@ export default class GD extends Component {
         };
     }
 
+    // 设置Navigator跳转动画
+    setNavAnimationType(route) {
+        if(route.animationType) { // 外部有值传入
+            // 关闭返回手势
+            let conf = route.animationType;
+            conf.gestures = null;
+            return conf;
+        }else{
+            // 默认动画
+            return Navigator.SceneConfigs.PushFromRight;
+        }
+    }
+
     // 返回TabBar的Item
     renderTabBarItem(title, selectedTab, image, selectedImage, component) {
         return (
@@ -56,6 +69,9 @@ export default class GD extends Component {
                         component: component
                     }
                 }
+
+                // 设置导航动画
+                configureScene={(route) => this.setNavAnimationType(route)}
 
                 renderScene = {
                     (route, navigator) => {
