@@ -55,7 +55,7 @@ export default class GDHalfHourHot extends Component {
         //             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
         //             loaded:true,
         //         });
-        //         // 关闭下来刷新动画
+        //         // 关闭下拉刷新动画
         //         if (resolve !== undefined) {
         //             // 使用定时器 延时关闭动画
         //             setTimeout(() => {
@@ -67,12 +67,15 @@ export default class GDHalfHourHot extends Component {
         // });
 
         HTTPBase.get('http://guangdiu.com/api/gethots.php')
-            .then((responseData) => {
+            .then((responseData) => { // 处理数据
+                // 修改dataSource的值
                 this.setState({
                     dataSource: this.state.dataSource.cloneWithRows(responseData.data),
                     loaded:true,
                 });
+                // 关闭下拉刷新动画
                 if (resolve !== undefined){
+                    // 使用定时器 延时关闭动画
                     setTimeout(() => {
                         resolve();  // 关闭动画
                     }, 1000);
