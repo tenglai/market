@@ -12,6 +12,7 @@ import {
     Dimensions,
     ActivityIndicator,
     Modal, // 模态
+    AsyncStorage, // 缓存数据库(数据持久化)
 } from 'react-native';
 
 // 引入 下拉刷新组件
@@ -49,34 +50,88 @@ export default class GDHome extends Component {
             loaded: false, // 用于判断是否显示空白页
             isModal: false, // 用于判断模态的可见性
         };
+        // 全局定义一个空数组用于存储列表数据
+        this.data = [];
         // 绑定
-        this.fetchData = this.fetchData.bind(this);
+        this.loadData = this.loadData.bind(this);
         this.loadMore = this.loadMore.bind(this);
     }
 
-    // 网络请求
-    fetchData(resolve) {
+    // 加载最新数据网络请求
+    loadData(resolve) {
 
-        let params = {"count" : 5 };
+        let params = {"count" : 10 };
 
-        HTTPBase.post('http://guangdiu.com/api/getlist.php', params)
+        HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
             .then((responseData) => {
+
+                // 拼接数据
+                this.data = this.data.concat(responseData.data);
+
+                // 重新渲染
                 this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(responseData.data),
+                    dataSource: this.state.dataSource.cloneWithRows(this.data),
                     loaded:true,
                 });
+
+                // 关闭刷新动画
                 if (resolve !== undefined){
                     setTimeout(() => {
                         resolve();
                     }, 1000);
                 }
+
+                // 存储数组中最后一个元素的id
+                let cnlastID = responseData.data[responseData.data.length - 1].id;
+                AsyncStorage.setItem('cnlastID', cnlastID.toString());  // 只能存储字符或字符串
+
             })
             .catch((error) => {
 
             })
     }
 
-    // 跳转到近半小时热门(通过模态跳转)
+    // 加载更多数据的网络请求
+    loadMoreData(value) {
+
+        let params = {
+            "count" : 10,
+            "sinceid" : value 
+        };
+
+        HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
+            .then((responseData) => {
+
+                // 拼接数据
+                this.data = this.data.concat(responseData.data);
+
+                // 重新渲染
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(this.data),
+                    loaded:true,
+                });
+
+                // 存储数组中最后一个元素的id
+                let cnlastID = responseData.data[responseData.data.length - 1].id;
+                AsyncStorage.setItem('cnlastID', cnlastID.toString());  // 只能存储字符或字符串
+
+            })
+            .catch((error) => {
+
+            })
+    }
+
+    // 加载更多数据操作
+    loadMore() {
+        // 读取存储的id
+        AsyncStorage.getItem('cnlastID')
+            .then((value) => {
+                // 数据加载操作
+                this.loadMoreData(value);
+            })
+    }
+
+    // 模态到近半小时热门
     pushToHalfHourHot() {
         this.setState({
             isModal: true
@@ -87,6 +142,20 @@ export default class GDHome extends Component {
     pushToSearch() {
         this.props.navigator.push({
             component: Search,
+        })
+    }
+
+    // 安卓模态销毁模态
+    onRequestClose() {
+        this.setState({
+            isModal: false
+        })
+    }
+
+    // 关闭模态
+    closeModal(data) {
+        this.setState({
+            isModal:data
         })
     }
 
@@ -123,10 +192,7 @@ export default class GDHome extends Component {
         );
     }
 
-    // 加载更多
-    loadMore() {
-    }
-
+    // ListView尾部
     renderFooter() {
         return (
             <View style={{height: 100}}>
@@ -146,7 +212,7 @@ export default class GDHome extends Component {
             return(
                 <PullList   // 将ListView 改为 PullList
                     // 下拉刷新
-                    onPullRelease={(resolve) => this.fetchData(resolve)}
+                    onPullRelease={(resolve) => this.loadData(resolve)}
                     // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染
                     dataSource={this.state.dataSource} 
                     renderRow={this.renderRow}
@@ -179,21 +245,7 @@ export default class GDHome extends Component {
     // 生命周期 组件渲染完成 已经出现在dom文档里
     componentDidMount() {
         // 请求数据
-        this.fetchData();
-    }
-
-    // 销毁模态
-    onRequestClose() {
-        this.setState({
-            isModal: false
-        })
-    }
-
-    // 关闭模态
-    closeModal(data) {
-        this.setState({
-            isModal:data
-        })
+        this.loadData();
     }
 
     render() {
