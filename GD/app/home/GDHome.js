@@ -11,6 +11,7 @@ import {
     ListView,
     Dimensions,
     ActivityIndicator,
+    Modal, // 模态
 } from 'react-native';
 
 // 引入 下拉刷新组件
@@ -46,6 +47,7 @@ export default class GDHome extends Component {
         this.state = {
             dataSource: new ListView.DataSource({rowHasChanged:(r1, r2) => r1 !== r2}), // 数据源 优化
             loaded: false, // 用于判断是否显示空白页
+            isModal: false, // 用于判断模态的可见性
         };
         // 绑定
         this.fetchData = this.fetchData.bind(this);
@@ -54,36 +56,6 @@ export default class GDHome extends Component {
 
     // 网络请求
     fetchData(resolve) {
-        // // 初始化 formData
-        // let formData = new FormData();
-        // // 添加参数
-        // formData.append("count","5");
-        // formData.append("mall","京东商城");
-
-        // // 测试没用数据的情况
-        // setTimeout(() => {
-        //     fetch('http://guangdiu.com/api/getlist.php', { // url 请求网址
-        //         method: 'POST', // 请求方式
-        //         headers:{}, // 设置请求头(默认为空对象)
-        //         body:formData, // 将formData传给body
-        //     })
-        //     .then((response) => response.json())  // 定义名称 将数据转为json格式
-        //     .then((responseData) => { // 处理数据
-        //         // 修改dataSource的值
-        //         this.setState({
-        //             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
-        //             loaded:true,
-        //         });
-        //         // 关闭下来刷新动画
-        //         if (resolve !== undefined) {
-        //             // 使用定时器 延时关闭动画
-        //             setTimeout(() => {
-        //                 resolve();
-        //             },1000);
-        //         }
-        //     })
-        //     .done(); // 结束
-        // });
 
         let params = {"count" : 5 };
 
@@ -104,13 +76,10 @@ export default class GDHome extends Component {
             })
     }
 
-    // 跳转到近半小时热门
+    // 跳转到近半小时热门(通过模态跳转)
     pushToHalfHourHot() {
-        // this.props 可以获取所有组件属性
-        this.props.navigator.push({
-            component: HalfHourHot,
-            // 设置调整动画
-            animationType: Navigator.SceneConfigs.FloatFromBottom,
+        this.setState({
+            isModal: true
         })
     }
 
@@ -156,16 +125,6 @@ export default class GDHome extends Component {
 
     // 加载更多
     loadMore() {
-        // fetch('http://guangdiu.com/api/gethots.php')  // 请求地址
-        // .then((response) => response.json())  // 定义名称 将数据转为json格式
-        // .then((responseData) => { // 处理数据
-        //     // 修改dataSource的值
-        //     this.setState({
-        //         dataSource: this.state.dataSource.cloneWithRows(responseData.data),
-        //         loaded:true,
-        //     });
-        // })
-        // .done(); // 结束
     }
 
     renderFooter() {
@@ -223,9 +182,33 @@ export default class GDHome extends Component {
         this.fetchData();
     }
 
+    // 销毁模态
+    onRequestClose() {
+        this.setState({
+            isModal: false
+        })
+    }
+
+    // 关闭模态
+    closeModal(data) {
+        this.setState({
+            isModal:data
+        })
+    }
+
     render() {
         return (
             <View style={styles.container}>
+                {/* 初始化模态 */}
+                <Modal
+                    animationType='slide'  // 动画 底部弹窗
+                    transparent={false}  // 透明度
+                    visible={this.state.isModal}  // 可见性
+                    onRequestClose={() => this.onRequestClose()}  // 销毁
+                >
+                    <HalfHourHot removeModal={(data) => this.closeModal(data)} />
+                </Modal>
+
                 {/* 导航栏样式 */}
                 <CommunalNavBar
                     leftItem = {() => this.renderLeftItem()}

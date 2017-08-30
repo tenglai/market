@@ -42,29 +42,13 @@ export default class GDHalfHourHot extends Component {
         this.fetchData = this.fetchData.bind(this);
     }
 
+    // 提供参数出去,便于外部调用
+    static defaultProps = {
+        removeModal:{}
+    }
+
     // 网络请求
     fetchData(resolve) {
-
-        // 测试没用数据的情况
-        // setTimeout(() => {
-        //     fetch('http://guangdiu.com/api/gethots.php')  // 请求地址
-        //     .then((response) => response.json())  // 定义名称 将数据转为json格式
-        //     .then((responseData) => { // 处理数据
-        //         // 修改dataSource的值
-        //         this.setState({
-        //             dataSource: this.state.dataSource.cloneWithRows(responseData.data),
-        //             loaded:true,
-        //         });
-        //         // 关闭下拉刷新动画
-        //         if (resolve !== undefined) {
-        //             // 使用定时器 延时关闭动画
-        //             setTimeout(() => {
-        //                 resolve();
-        //             },1000);
-        //         }
-        //     })
-        //     .done(); // 结束
-        // });
 
         HTTPBase.get('http://guangdiu.com/api/gethots.php')
             .then((responseData) => { // 处理数据
@@ -86,9 +70,9 @@ export default class GDHalfHourHot extends Component {
             })
     }
 
-    // 跳回首页
-    popToHome() {
-        this.props.navigator.pop();
+    popToHome(data) {
+        // 向外部传值
+        this.props.removeModal(data);
     }
 
     // 返回中间按钮
@@ -102,7 +86,7 @@ export default class GDHalfHourHot extends Component {
     renderRightItem() {
         return(
             <TouchableOpacity
-                onPress={() => {this.popToHome()}}
+                onPress={() => {this.popToHome(false)}}
             >
                 <Text style={styles.navbarRightItemStyle}>关闭</Text>
             </TouchableOpacity>

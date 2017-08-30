@@ -6,13 +6,29 @@ import {
   AppRegistry,
 } from 'react-native';
 
-// 引入外部文件(主页面)
-import Main from './app/main/GDMain';
+// 导航器
+import CustomerComponents, {
+    Navigator
+} from 'react-native-deprecated-custom-components';
+// 引入 启动页面
+import LaunchPage from './app/main/GDLaunchPage';
 
 export default class GD extends Component {
   render() {
     return (
-      <Main />
+    	<Navigator
+            initialRoute={
+            	{
+            		name: 'launchPage',
+            		component:LaunchPage
+            	}
+           	}
+
+            renderScene={(route, navigator) =>{
+                let Component = route.component;
+                return <Component {...route.params} navigator={navigator} />
+            }}
+        />
     );
   }
 }
