@@ -33,6 +33,8 @@ import HalfHourHot from './GDHalfHourHot';
 import Search from './GDSearch';
 // 引入 cell
 import CommunalHotCell from '../main/GDCommunalHotCell';
+// 引入 详情页 组件
+import CommunalDetail from '../main/GDCommunalDetail';
 // 引入 空白页组件
 import NoDataView from '../main/GDNoDataView';
 
@@ -215,7 +217,7 @@ export default class GDHome extends Component {
                     onPullRelease={(resolve) => this.loadData(resolve)}
                     // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染
                     dataSource={this.state.dataSource} 
-                    renderRow={this.renderRow}
+                    renderRow={this.renderRow.bind(this)}
                     // 隐藏水平线
                     showsHorizontalScrollIndicator={false}
                     style={styles.listViewStyle}
@@ -231,14 +233,29 @@ export default class GDHome extends Component {
         }
     }
 
+    // 通过id 跳转详情页
+    pushToDetail(value) {
+        this.props.navigator.push({
+            component:CommunalDetail,
+            params: {
+                url: 'https://guangdiu.com/api/showdetail.php' + '?' + 'id=' + value
+            }
+        })
+    }
+
     // 返回每一行cell的样式
     renderRow(rowData) {
         // 使用cell组件
         return(
-            <CommunalHotCell
-                image={rowData.image}
-                title={rowData.title}
-            />
+            <TouchableOpacity
+                // 给每一个cell添加点击事件
+                onPress={() => this.pushToDetail(rowData.id)}
+            >
+                <CommunalHotCell
+                    image={rowData.image}
+                    title={rowData.title}
+                />
+            </TouchableOpacity>
         );
     }
 
