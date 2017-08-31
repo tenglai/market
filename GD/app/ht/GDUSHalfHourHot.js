@@ -27,9 +27,6 @@ import NoDataView from '../main/GDNoDataView';
 // 引入 下拉刷新组件
 import {PullList} from 'react-native-pull';
 
-// 引入 HTTP封装组件
-import HTTPBase from '../http/HTTPBase';
-
 export default class GDUSHalfHourHot extends Component {
 
     // 构造
@@ -117,7 +114,7 @@ export default class GDUSHalfHourHot extends Component {
                     // 隐藏水平线
                     showsHorizontalScrollIndicator={false}
                     style={styles.listViewStyle}
-                    initialListSize={5}
+                    initialListSize={7}
                     // 返回 listView 头部
                     renderHeader={this.renderHeader}
                 />

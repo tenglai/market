@@ -27,7 +27,10 @@ import Home from '../home/GDHome';
 import HT from '../ht/GDHt';
 import HourList from '../hourList/GDHourList';
 // 引入 HTTP封装组件
-import HTTPBase from '../http/HTTPBase';
+import HTTP from '../http/HTTPBase';
+
+// 引入 本地数据存储封装组件 (数据持久化)
+// import RealmStorage from '../storage/realmStorage';
 
 export default class GD extends Component {
     // ES6
@@ -135,6 +138,9 @@ export default class GD extends Component {
                             cnbadgeText:responseData.cn,
                             usbadgeText:responseData.us
                         })
+                    })
+                    .catch((error) => {
+
                     })
             }
         },3000)

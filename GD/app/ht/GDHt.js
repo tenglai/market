@@ -32,14 +32,11 @@ import USHalfHourHot from './GDUSHalfHourHot';
 // 引入 搜索页面组件
 import Search from '../main/GDSearch';
 // 引入 cell
-import CommunalHotCell from '../main/GDCommunalHotCell';
+import CommunalCell from '../main/GDCommunalCell';
 // 引入 详情页 组件
 import CommunalDetail from '../main/GDCommunalDetail';
 // 引入 空白页组件
 import NoDataView from '../main/GDNoDataView';
-
-// 引入 HTTP封装组件
-import HTTPBase from '../http/HTTPBase';
 
 export default class GDHome extends Component {
 
@@ -96,9 +93,22 @@ export default class GDHome extends Component {
                 // 首页存储数组中第一个元素的id
                 let usfirstID = responseData.data[0].id;
                 AsyncStorage.setItem('usfirstID', usfirstID.toString());
+                
+                // // 清除本地存储的数据
+                // RealmBase.removeAllData('HomeData');
+
+                // // 存储数据到本地
+                // RealmBase.create('HomeData', responseData.data); // 向数据表存储数据
             })
             .catch((error) => {
+                // // 数据加载失败,拿到本地存储的数据,展示出来,如果没有存储,那就显示无数据页面
+                // this.data = RealmBase.loadAll('HomeData'); // 从数据表提取数据
 
+                // // 重新渲染
+                // this.setState({
+                //     dataSource: this.state.dataSource.cloneWithRows(this.data),
+                //     loaded:true,
+                // });
             })
     }
 
@@ -231,7 +241,7 @@ export default class GDHome extends Component {
                     // 隐藏水平线
                     showsHorizontalScrollIndicator={false}
                     style={styles.listViewStyle}
-                    initialListSize={5}
+                    initialListSize={7}
                     // 返回 listView 头部
                     renderHeader={this.renderHeader}
                     // 上拉加载更多
@@ -261,9 +271,12 @@ export default class GDHome extends Component {
                 // 给每一个cell添加点击事件
                 onPress={() => this.pushToDetail(rowData.id)}
             >
-                <CommunalHotCell
+                <CommunalCell
                     image={rowData.image}
                     title={rowData.title}
+                    mall={rowData.mall}  // 平台
+                    pubTime={rowData.pubtime}  // 时间
+                    fromSite={rowData.fromsite}  // 来源
                 />
             </TouchableOpacity>
         );

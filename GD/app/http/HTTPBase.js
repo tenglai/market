@@ -85,5 +85,4 @@ HTTPBase.post = function (url, params, headers) {
     })
 }
 
-module.exports = HTTPBase;
-// global.HTTPBase = HTTPBase;  // 全局定义
+global.HTTPBase = HTTPBase;  // 全局定义
