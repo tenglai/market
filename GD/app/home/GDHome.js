@@ -90,6 +90,10 @@ export default class GDHome extends Component {
                 let cnlastID = responseData.data[responseData.data.length - 1].id;
                 AsyncStorage.setItem('cnlastID', cnlastID.toString());  // 只能存储字符或字符串
 
+                // 首页存储数组中第一个元素的id
+                let cnfirstID = responseData.data[0].id;
+                AsyncStorage.setItem('cnfirstID', cnfirstID.toString());
+
             })
             .catch((error) => {
 
