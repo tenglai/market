@@ -63,7 +63,7 @@ export default class GDCommunalDetail extends Component {
                 {/* 初始化WebView */}
                 <WebView
                     style={styles.webViewStyle}
-                    source={{url:this.props.url, method: 'GET' }}
+                    source={{uri:this.props.url, method: 'GET' }}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
                     scalesPageToFit={false}
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
     },
 
     webViewStyle: {
-        flex:1
+        flex: 1
     }
 });

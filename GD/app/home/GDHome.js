@@ -30,7 +30,7 @@ import CommunalNavBar from '../main/GDCommunalNavBar';
 // 引入 近半小时热门组件
 import HalfHourHot from './GDHalfHourHot';
 // 引入 搜索页面组件
-import Search from './GDSearch';
+import Search from '../main/GDSearch';
 // 引入 cell
 import CommunalHotCell from '../main/GDCommunalHotCell';
 // 引入 详情页 组件
@@ -66,6 +66,9 @@ export default class GDHome extends Component {
 
         HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
             .then((responseData) => {
+
+                // 情况数组(刷新时)
+                this.data = [];
 
                 // 拼接数据
                 this.data = this.data.concat(responseData.data);
@@ -275,7 +278,19 @@ export default class GDHome extends Component {
                     visible={this.state.isModal}  // 可见性
                     onRequestClose={() => this.onRequestClose()}  // 销毁
                 >
-                    <HalfHourHot removeModal={(data) => this.closeModal(data)} />
+                    <Navigator
+                        initialRoute={{
+                            name:'halfHourHot',
+                            component:HalfHourHot
+                        }}
+
+                        renderScene={(route, navigator) => {
+                            let Component = route.component;
+                            return <Component
+                                removeModal={(data) => this.closeModal(data)}
+                                {...route.params}
+                                navigator={navigator} />
+                        }} />
                 </Modal>
 
                 {/* 导航栏样式 */}

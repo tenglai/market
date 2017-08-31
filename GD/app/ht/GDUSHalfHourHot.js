@@ -1,5 +1,5 @@
 /**
- * 近半小时热门
+ * 近半小时热门(US)
  */
 import React, { Component } from 'react';
 import {
@@ -30,7 +30,7 @@ import {PullList} from 'react-native-pull';
 // 引入 HTTP封装组件
 import HTTPBase from '../http/HTTPBase';
 
-export default class GDHalfHourHot extends Component {
+export default class GDUSHalfHourHot extends Component {
 
     // 构造
     constructor(props) {
@@ -52,7 +52,11 @@ export default class GDHalfHourHot extends Component {
     // 网络请求
     fetchData(resolve) {
 
-        HTTPBase.get('http://guangdiu.com/api/gethots.php')
+    	let params = {
+    		"c" : "us"
+    	}
+
+        HTTPBase.get('http://guangdiu.com/api/gethots.php', params)
             .then((responseData) => { // 处理数据
                 // 修改dataSource的值
                 this.setState({
