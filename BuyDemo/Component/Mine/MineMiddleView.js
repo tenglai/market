@@ -10,10 +10,10 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
-
+ 
 /**-------导入外部的json数据-------***/
 var MiddleData = require('./MiddleData.json');
-
+ 
 var MineMiddleView = React.createClass({
     render() {
         return (
@@ -22,7 +22,7 @@ var MineMiddleView = React.createClass({
             </View>
         );
     },
-
+ 
     renderAllItem(){
         // 定义组件数组
         var itemArr = [];
@@ -39,7 +39,7 @@ var MineMiddleView = React.createClass({
         return itemArr;
     }
 });
-
+ 
 // 里面的组件类
 var InnerView = React.createClass({
     getDefaultProps(){
@@ -48,7 +48,7 @@ var InnerView = React.createClass({
             title:''
         }
     },
-
+ 
     render(){
         return(
             <TouchableOpacity activeOpacity={0.5} onPress={()=>{alert('0')}}>
@@ -60,8 +60,8 @@ var InnerView = React.createClass({
         );
     }
 });
-
-
+ 
+ 
 const styles = StyleSheet.create({
     container: {
         // 设置主轴的方向
@@ -71,16 +71,16 @@ const styles = StyleSheet.create({
         // 设置主轴的对齐方式
         justifyContent:'space-around'
     },
-
+ 
     innerViewStyle:{
         width:70,
         height:70,
-
+ 
         // 水平和垂直居中
         justifyContent:'center',
         alignItems:'center'
     }
 });
-
+ 
 // 输出组件类
 module.exports = MineMiddleView;

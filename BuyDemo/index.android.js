@@ -4,8 +4,6 @@
 import React, { Component } from 'react';
 import {
     AppRegistry,
-    View,
-    Text, 
 } from 'react-native';
 
 /*==============导入外部组件================*/
@@ -22,9 +20,6 @@ class BuyDemo extends Component {
                     return <Component {...route.passProps} navigator={navigator} />
                 }}
             />
-            // <View>
-            //     <Text>123</Text>
-            // </View>
         );
     }
 }
