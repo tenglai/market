@@ -27,16 +27,21 @@ const {width, height} = Dimensions.get('window');
 
 // 引入自定义导航栏组件
 import CommunalNavBar from '../main/GDCommunalNavBar';
-// 引入 近半小时热门组件
-import USHalfHourHot from './GDUSHalfHourHot';
-// 引入 搜索页面组件
-import Search from '../main/GDSearch';
 // 引入 cell
 import CommunalCell from '../main/GDCommunalCell';
 // 引入 详情页 组件
 import CommunalDetail from '../main/GDCommunalDetail';
+// 引入 筛选菜单组件
+import CommunalSiftMenu from '../main/GDCommunalSiftMenu';
+// 引入 近半小时热门组件
+import USHalfHourHot from './GDUSHalfHourHot';
+// 引入 搜索页面组件
+import Search from '../main/GDSearch';
 // 引入 空白页组件
 import NoDataView from '../main/GDNoDataView';
+
+// 数据 筛选菜单
+import HTSiftData from '../data/HTSiftData.json';
 
 export default class GDHome extends Component {
 
@@ -47,7 +52,8 @@ export default class GDHome extends Component {
         this.state = {
             dataSource: new ListView.DataSource({rowHasChanged:(r1, r2) => r1 !== r2}), // 数据源 优化
             loaded: false, // 用于判断是否显示空白页
-            isModal: false, // 用于判断模态的可见性
+            isUSHalfHourHotModal: false, // 用于判断模态的可见性
+            isSiftModal: false, // 筛选功能
         };
         // 全局定义一个空数组用于存储列表数据
         this.data = [];
@@ -112,6 +118,52 @@ export default class GDHome extends Component {
             })
     }
 
+    // 接收 筛选菜单的参数,进行网络请求
+    loadSiftData(mall, cate) {
+
+        let params = {};
+
+        if(mall === "" && cate === ""){  // 全部
+            this.loadData(undefined);
+            return;
+        }
+
+        if(mall === ""){ // cate 有值
+            params = {
+                "cate" : cate,
+                "country" : "us"
+            };
+        }else{
+            params = {
+                "mall" : mall,
+                "country" : "us"
+            };
+        }
+
+        HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
+            .then((responseData) => {
+
+                // 情况数组(刷新时)
+                this.data = [];
+
+                // 拼接数据
+                this.data = this.data.concat(responseData.data);
+
+                // 重新渲染
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(this.data),
+                    loaded:true,
+                });
+
+                // 存储数组中最后一个元素的id
+                let cnlastID = responseData.data[responseData.data.length - 1].id;
+                AsyncStorage.setItem('cnlastID', cnlastID.toString());  // 只能存储字符或字符串
+            })
+            .catch((error) => {
+
+            })
+    }
+
     // 加载更多数据的网络请求
     loadMoreData(value) {
 
@@ -156,7 +208,14 @@ export default class GDHome extends Component {
     // 模态到近半小时热门
     pushToHalfHourHot() {
         this.setState({
-            isModal: true
+            isUSHalfHourHotModal: true
+        })
+    }
+
+    // 显示筛选菜单
+    showSiftMenu() {
+        this.setState({
+            isSiftModal:true,
         })
     }
 
@@ -170,14 +229,16 @@ export default class GDHome extends Component {
     // 安卓模态销毁模态
     onRequestClose() {
         this.setState({
-            isModal: false
+            isUSHalfHourHotModal:false,
+            isSiftModal:false
         })
     }
 
     // 关闭模态
     closeModal(data) {
         this.setState({
-            isModal:data
+            isUSHalfHourHotModal:data,
+            isSiftModal:data
         })
     }
 
@@ -196,7 +257,10 @@ export default class GDHome extends Component {
     // 返回中间按钮
     renderTitleItem() {
         return(
-            <TouchableOpacity>
+            <TouchableOpacity
+                // 显示或隐藏筛选菜单
+                onPress={() => {this.showSiftMenu()}}
+            >
                 <Image source={{uri:'navtitle_home_down_66x20'}} style={styles.navbarTitleItemStyle} />
             </TouchableOpacity>
         );
@@ -291,16 +355,16 @@ export default class GDHome extends Component {
     render() {
         return (
             <View style={styles.container}>
-                {/* 初始化模态 */}
+                {/* 初始化近半小时热门模态 */}
                 <Modal
                     animationType='slide'  // 动画 底部弹窗
                     transparent={false}  // 透明度
-                    visible={this.state.isModal}  // 可见性
+                    visible={this.state.isUSHalfHourHotModal}  // 可见性
                     onRequestClose={() => this.onRequestClose()}  // 销毁
                 >
                     <Navigator
                         initialRoute={{
-                            name:'halfHourHot',
+                            name:'ushalfHourHot',
                             component:USHalfHourHot
                         }}
 
@@ -311,6 +375,20 @@ export default class GDHome extends Component {
                                 {...route.params}
                                 navigator={navigator} />
                         }} />
+                </Modal>
+
+                {/* 初始化筛选菜单模态 */}
+                <Modal
+                    animationType='none'  // 无动画
+                    transparent={true}  // 为透明状态
+                    visible={this.state.isSiftModal}  // 可见性
+                    onRequestClose={() => this.onRequestClose()}  // 销毁
+                >
+                    <CommunalSiftMenu
+                        removeModal={(data) => this.closeModal(data)}
+                        data={HTSiftData}
+                        loadSiftData={(mall, cate) => this.loadSiftData(mall, cate)}
+                    />
                 </Modal>
 
                 {/* 导航栏样式 */}

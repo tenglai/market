@@ -153,15 +153,15 @@ export default class GDHalfHourHot extends Component {
         );
     }
 
-    componentWillMount() {
-        // 向GDMain.js 发送通知 隐藏tabBar
-        DeviceEventEmitter.emit('isHiddenTabBar', true);
-    }
+    // componentWillMount() {
+    //     // 向GDMain.js 发送通知 隐藏tabBar
+    //     DeviceEventEmitter.emit('isHiddenTabBar', true);
+    // }
 
-    componentWillUnmount() {
-        // 向GDMain.js 发送通知 显示tabBar
-        DeviceEventEmitter.emit('isHiddenTabBar', false);
-    }
+    // componentWillUnmount() {
+    //     // 向GDMain.js 发送通知 显示tabBar
+    //     DeviceEventEmitter.emit('isHiddenTabBar', false);
+    // }
 
     // 生命周期 组件渲染完成 已经出现在dom文档里
     componentDidMount() {
