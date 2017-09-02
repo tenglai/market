@@ -33,6 +33,8 @@ import CommunalCell from '../main/GDCommunalCell';
 import CommunalDetail from '../main/GDCommunalDetail';
 // 引入 空白页组件
 import NoDataView from '../main/GDNoDataView';
+// 引入 设置页组件
+import Settings from './GDSettings';
 
 export default class GDHourList extends Component {
     // 构造
@@ -93,7 +95,9 @@ export default class GDHourList extends Component {
 
     // 跳转到设置
     pushToSettings() {
-
+        this.props.navigator.push({
+            component:Settings
+        })
     }
 
     // 返回中间标题
@@ -106,7 +110,9 @@ export default class GDHourList extends Component {
     // 返回右边按钮
     renderRightItem() {
         return(
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => this.pushToSettings()}
+            >
                 <Text style={styles.navbarRightItemStyle}>设置</Text>
             </TouchableOpacity>
         );

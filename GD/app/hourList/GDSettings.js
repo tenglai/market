@@ -13,6 +13,8 @@ import {
 
 // 引入自定义导航栏组件
 import CommunalNavBar from '../main/GDCommunalNavBar';
+// 引入 设置页 Cell组件
+import SettingsCell from './GDSettingsCell';
 
 export default class GDSettings extends Component {
 
