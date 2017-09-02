@@ -89,10 +89,11 @@ export default class GDCommunalSiftMenu extends Component {
                 <View style={styles.container}>
                     {/* 菜单内容 */}
                     <ListView
-                        dataSource={this.state.dataSource}
-                        renderRow={this.renderRow.bind(this)}
+                        scrollEnabled={false} // 设置禁止滚动
+                        dataSource={this.state.dataSource} // 设置数据源
+                        renderRow={this.renderRow.bind(this)} // 根据数据初始化 Cell
                         contentContainerStyle={styles.contentViewStyle} // 内容样式
-                        initialListSize={16} // 默认加载数据条数
+                        initialListSize={16} // 一次性渲染几行数据
                     />
                 </View>
             </TouchableOpacity>

@@ -45,6 +45,7 @@ export default class GDHourList extends Component {
             dataSource: new ListView.DataSource({rowHasChanged:(r1, r2) => r1 !== r2}),
             loaded:false,
             prompt:'',
+            isNextTouch:false
         };
         // 定义变量,由于临时存储数据
         this.nexthourhour = '';  // 下一个小时时间
@@ -68,11 +69,18 @@ export default class GDHourList extends Component {
         HTTPBase.get('http://guangdiu.com/api/getranklist.php', params)
             .then((responseData) => {
 
+                let isNextTouch = true;
+
+                if (responseData.hasnexthour == 1) {    // hasnexthour不为0时 下一小时 按钮可点击
+                    isNextTouch = false;
+                }
+
                 // 重新渲染
                 this.setState({
                     dataSource: this.state.dataSource.cloneWithRows(responseData.data),
                     loaded:true,
-                    prompt:responseData.displaydate + responseData.rankhour + '点档' + '(' + responseData.rankduring + ')'  // 提示栏
+                    prompt:responseData.displaydate + responseData.rankhour + '点档' + '(' + responseData.rankduring + ')',  // 提示栏
+                    isNextTouch:isNextTouch, // 更新按钮状态
                 });
 
                 // 关闭刷新动画
@@ -82,13 +90,13 @@ export default class GDHourList extends Component {
                     }, 1000);
                 }
 
-                // 暂时保留一些数据(赋值)
+                // 需要缓存的数据
                 this.nexthourhour = responseData.nexthourhour;
                 this.nexthourdate = responseData.nexthourdate;
                 this.lasthourhour = responseData.lasthourhour;
                 this.lasthourdate = responseData.lasthourdate;
             })
-            .catch((error) => {
+            .catch((error) => {  // 网络问题处理
 
             })
     }
@@ -199,16 +207,19 @@ export default class GDHourList extends Component {
 
                 {/* 操作栏 */}
                 <View style={styles.operationViewStyle}>
+                    {/* 上一个小时按钮 */}
                     <TouchableOpacity
                         onPress={() => this.lastHour()}
                     >
                         <Text style={{marginRight:10, fontSize:17, color:'green'}}>{"< " + "上1小时"}</Text>
                     </TouchableOpacity>
 
+                    {/* 下一个小时按钮 */}
                     <TouchableOpacity
                         onPress={() => this.nextHour()}
+                        disabled={this.state.isNextTouch}
                     >
-                        <Text style={{marginLeft:10, fontSize:17, color:'green'}}>{"下1小时" + " >"}</Text>
+                        <Text style={{marginLeft:10, fontSize:17, color:this.state.isNextTouch == false ? 'green' : 'gray'}}>{"下1小时" + " >"}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

@@ -13,6 +13,8 @@ import {
     ActivityIndicator,
     Modal, // 模态
     AsyncStorage, // 缓存数据库(数据持久化)
+    DeviceEventEmitter, // 通知
+    InteractionManager, //  解决跳转卡顿问题
 } from 'react-native';
 
 // 引入 下拉刷新组件
@@ -44,6 +46,11 @@ import NoDataView from '../main/GDNoDataView';
 import HTSiftData from '../data/HTSiftData.json';
 
 export default class GDHome extends Component {
+
+    // 初始化(默认)
+    static defaultProps = {
+        loadDataNumber:{} // 回调
+    }
 
     // 构造
     constructor(props) {
@@ -92,6 +99,9 @@ export default class GDHome extends Component {
                     }, 1000);
                 }
 
+                // 获取最新数据个数(角标)
+                this.loadDataNumber();
+
                 // 存储数组中最后一个元素的id
                 let uslastID = responseData.data[responseData.data.length - 1].id;
                 AsyncStorage.setItem('uslastID', uslastID.toString());  // 只能存储字符或字符串
@@ -118,7 +128,38 @@ export default class GDHome extends Component {
             })
     }
 
-    // 接收 筛选菜单的参数,进行网络请求
+    // 加载更多数据的网络请求
+    loadMoreData(value) {
+
+        let params = {
+            "count" : 10,
+            "country" : "us",
+            "sinceid" : value 
+        };
+
+        HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
+            .then((responseData) => {
+
+                // 拼接数据
+                this.data = this.data.concat(responseData.data);
+
+                // 重新渲染
+                this.setState({
+                    dataSource: this.state.dataSource.cloneWithRows(this.data),
+                    loaded:true,
+                });
+
+                // 存储数组中最后一个元素的id
+                let uslastID = responseData.data[responseData.data.length - 1].id;
+                AsyncStorage.setItem('uslastID', uslastID.toString());  // 只能存储字符或字符串
+
+            })
+            .catch((error) => {
+
+            })
+    }
+
+    // 加载筛选数据网络请求
     loadSiftData(mall, cate) {
 
         let params = {};
@@ -164,35 +205,9 @@ export default class GDHome extends Component {
             })
     }
 
-    // 加载更多数据的网络请求
-    loadMoreData(value) {
-
-        let params = {
-            "count" : 10,
-            "country" : "us",
-            "sinceid" : value 
-        };
-
-        HTTPBase.get('https://guangdiu.com/api/getlist.php', params)
-            .then((responseData) => {
-
-                // 拼接数据
-                this.data = this.data.concat(responseData.data);
-
-                // 重新渲染
-                this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(this.data),
-                    loaded:true,
-                });
-
-                // 存储数组中最后一个元素的id
-                let uslastID = responseData.data[responseData.data.length - 1].id;
-                AsyncStorage.setItem('uslastID', uslastID.toString());  // 只能存储字符或字符串
-
-            })
-            .catch((error) => {
-
-            })
+    // 获取最新数据个数
+    loadDataNumber() {
+        this.props.loadDataNumber();
     }
 
     // 加载更多数据操作
@@ -212,18 +227,13 @@ export default class GDHome extends Component {
         })
     }
 
-    // 显示筛选菜单
-    showSiftMenu() {
-        this.setState({
-            isSiftModal:true,
-        })
-    }
-
     // 跳转到搜索页面
     pushToSearch() {
-        this.props.navigator.push({
-            component: Search,
-        })
+        InteractionManager.runAfterInteractions(() => {
+            this.props.navigator.push({
+                component: Search,
+            });
+        });
     }
 
     // 安卓模态销毁模态
@@ -240,6 +250,31 @@ export default class GDHome extends Component {
             isUSHalfHourHotModal:data,
             isSiftModal:data
         })
+    }
+
+    // 显示筛选菜单
+    showSiftMenu() {
+        this.setState({
+            isSiftModal:true,
+        })
+    }
+
+    // 跳转详情页
+    pushToDetail(value) {
+        InteractionManager.runAfterInteractions(() => {
+            this.props.navigator.push({
+                component:CommunalDetail,
+                params: {
+                    url: 'https://guangdiu.com/api/showdetail.php' + '?' + 'id=' + value
+                }
+            });
+        });
+    }
+
+    // 点击了Item
+    clickTabBarItem() {
+        // 一键置顶
+        this.refs.pullList.scrollTo({y:0});
     }
 
     // 返回左边按钮
@@ -287,6 +322,25 @@ export default class GDHome extends Component {
         );
     }
 
+    // 返回每一行cell的样式
+    renderRow(rowData) {
+        // 使用cell组件
+        return(
+            <TouchableOpacity
+                // 给每一个cell添加点击事件
+                onPress={() => this.pushToDetail(rowData.id)}
+            >
+                <CommunalCell
+                    image={rowData.image}
+                    title={rowData.title}
+                    mall={rowData.mall}  // 平台
+                    pubTime={rowData.pubtime}  // 时间
+                    fromSite={rowData.fromsite}  // 来源
+                />
+            </TouchableOpacity>
+        );
+    }
+
     // 根据网络状态决定是否渲染 listView
     renderListView() {
         if(this.state.loaded === false) {
@@ -297,6 +351,7 @@ export default class GDHome extends Component {
         }else{
             return(
                 <PullList   // 将ListView 改为 PullList
+                    ref="pullList"  // 一键置顶
                     // 下拉刷新
                     onPullRelease={(resolve) => this.loadData(resolve)}
                     // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染
@@ -317,39 +372,13 @@ export default class GDHome extends Component {
         }
     }
 
-    // 通过id 跳转详情页
-    pushToDetail(value) {
-        this.props.navigator.push({
-            component:CommunalDetail,
-            params: {
-                url: 'https://guangdiu.com/api/showdetail.php' + '?' + 'id=' + value
-            }
-        })
-    }
-
-    // 返回每一行cell的样式
-    renderRow(rowData) {
-        // 使用cell组件
-        return(
-            <TouchableOpacity
-                // 给每一个cell添加点击事件
-                onPress={() => this.pushToDetail(rowData.id)}
-            >
-                <CommunalCell
-                    image={rowData.image}
-                    title={rowData.title}
-                    mall={rowData.mall}  // 平台
-                    pubTime={rowData.pubtime}  // 时间
-                    fromSite={rowData.fromsite}  // 来源
-                />
-            </TouchableOpacity>
-        );
-    }
-
-    // 生命周期 组件渲染完成 已经出现在dom文档里
+    // 组件加载完成
     componentDidMount() {
-        // 请求数据
+        // 加载最新数据
         this.loadData();
+
+        // 注册通知
+        this.subscription = DeviceEventEmitter.addListener('clickHTItem', () => this.clickTabBarItem())
     }
 
     render() {
