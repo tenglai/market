@@ -35,8 +35,7 @@ import CommunalDetail from '../main/GDCommunalDetail';
 import NoDataView from '../main/GDNoDataView';
 
 export default class GDHourList extends Component {
-
-   // 构造
+    // 构造
     constructor(props) {
         super(props);
         // 初始状态
@@ -45,33 +44,33 @@ export default class GDHourList extends Component {
             loaded:false,
             prompt:'',
         };
-        // 初始化
-        this.data = [];
-        this.nowHour = 0;
+        // 定义变量,由于临时存储数据
+        this.nexthourhour = '';  // 下一个小时时间
+        this.nexthourdate = '';  // 下一个小时日期
+        this.lasthourhour = '';  // 上一个小时时间
+        this.lasthourdate = '';  // 上一个小时日期
         this.loadData = this.loadData.bind(this);
     }
 
     // 网络请求
-    loadData(resolve) {
-
-        // 当前小时数
-        this.nowHour = new Date().getHours();
-
+    loadData(resolve, date, hour) {
         let params = {};
 
-        HTTPBase.get('https://guangdiu.com/api/getranklist.php', params)
+        if (date) {
+            params = {
+                "date" : date,
+                "hour" : hour
+            }
+        }
+
+        HTTPBase.get('http://guangdiu.com/api/getranklist.php', params)
             .then((responseData) => {
-
-                // 情况数组(刷新时)
-                this.data = [];
-
-                // 拼接数据
-                this.data = this.data.concat(responseData.data);
 
                 // 重新渲染
                 this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(this.data),
+                    dataSource: this.state.dataSource.cloneWithRows(responseData.data),
                     loaded:true,
+                    prompt:responseData.displaydate + responseData.rankhour + '点档' + '(' + responseData.rankduring + ')'  // 提示栏
                 });
 
                 // 关闭刷新动画
@@ -80,41 +79,12 @@ export default class GDHourList extends Component {
                         resolve();
                     }, 1000);
                 }
-            })
-            .catch((error) => {
 
-            })
-    }
-
-    // 根据时间加载数据
-    dataFromTime(hour, date) {
-
-        let params = {
-            "date": date,
-            "hour": hour
-        };
-
-        HTTPBase.get('https://guangdiu.com/api/getranklist.php', params)
-            .then((responseData) => {
-
-                // 情况数组(刷新时)
-                this.data = [];
-
-                // 拼接数据
-                this.data = this.data.concat(responseData.data);
-
-                // 重新渲染
-                this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(this.data),
-                    loaded:true,
-                });
-
-                // 关闭刷新动画
-                if (resolve !== undefined){
-                    setTimeout(() => {
-                        resolve();
-                    }, 1000);
-                }
+                // 暂时保留一些数据(赋值)
+                this.nexthourhour = responseData.nexthourhour;
+                this.nexthourdate = responseData.nexthourdate;
+                this.lasthourhour = responseData.lasthourhour;
+                this.lasthourdate = responseData.lasthourdate;
             })
             .catch((error) => {
 
@@ -136,9 +106,7 @@ export default class GDHourList extends Component {
     // 返回右边按钮
     renderRightItem() {
         return(
-            <TouchableOpacity
-                onPress={()=>{this.pushToSettings()}}
-            >
+            <TouchableOpacity>
                 <Text style={styles.navbarRightItemStyle}>设置</Text>
             </TouchableOpacity>
         );
@@ -191,51 +159,19 @@ export default class GDHourList extends Component {
         );
     }
 
-    // dom渲染完毕后调用
+    // dom渲染完毕后执行
     componentDidMount() {
         this.loadData();
     }
 
-    // 当前时间
-    nowDate() {
-        let date = new Date();     // 获取当前时间
-
-        let year = date.getFullYear();  // 年
-        let month = date.getMonth();    // 月
-        let day = date.getDate();       // 日
-
-        if(month >= 1 && month <= 9) { // 在 10 以内,我们手动添加 0
-            month = "0" + (month + 1);  // 注意：js 中月份是以 0 开始的
-        }
-
-        if(day >= 1 && day <= 9){ // 在 10 以内,我们手动添加 0
-            day = "0" + day;
-        }
-
-        return year + month + day;
-    }
-
     // 点击 上一小时 按钮
     lastHour() {
-        // 减去一小时
-        let hour = this.nowHour - 1;
-
-        this.dataFromTime(hour, this.nowDate());
-
-        // 重新赋值回去
-        this.nowHour = hour;
+        this.loadData(undefined, this.lasthourdate, this.lasthourhour);
     }
 
     // 点击 下一小时 按钮
     nextHour() {
-
-        // 减去一小时
-        let hour = this.nowHour + 1;
-
-        this.dataFromTime(hour, this.nowDate());
-
-        // 重新赋值回去
-        this.nowHour = hour;
+        this.loadData(undefined, this.nexthourdate, this.nexthourhour);
     }
 
     render() {
@@ -249,7 +185,7 @@ export default class GDHourList extends Component {
 
                 {/* 提醒栏 */}
                 <View style={styles.promptViewStyle}>
-                    <Text>提示框</Text>
+                    <Text>{this.state.prompt}</Text>
                 </View>
 
                 {/* 根据网络状态决定是否渲染 listview */}
