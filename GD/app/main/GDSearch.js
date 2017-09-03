@@ -250,13 +250,14 @@ export default class GDSearch extends Component {
                         <Image source={{uri:'search_icon_20x20'}} style={styles.searchImageStyle} />
                         <TextInput
                             style={styles.textInputStyle}
-                            keyboardType="default"  // 键盘类型
-                            placeholder="请输入搜索商品关键字"  // 提示文字
-                            placeholderTextColor='gray' // 设置提示文字颜色
-                            autoFocus={true} // 自动获取焦点,弹窗键盘
-                            clearButtonMode="while-editing"  // 清除按钮(编辑情况下出现清除按钮)
+                            keyboardType="default"                            // 键盘类型
+                            placeholder="请输入搜索商品关键字"                // 提示文字
+                            placeholderTextColor='gray'                       // 设置提示文字颜色
+                            autoFocus={true}                                  // 自动获取焦点,弹窗键盘
+                            clearButtonMode="while-editing"                   // 清除按钮(编辑情况下出现清除按钮)
                             onChangeText={(text) => {this.changeText = text}} // 监听文本改变,将文字返回
-                            onEndEditing={() => this.loadData()} // 结束编辑状态
+                            onEndEditing={() => this.loadData()}              // 结束编辑状态
+                            underlineColorAndroid={'transparent'}             // 隐藏 input 输入框下划线
                         />
                     </View>
 

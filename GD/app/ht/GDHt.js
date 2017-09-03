@@ -273,8 +273,24 @@ export default class GDHome extends Component {
 
     // 点击了Item
     clickTabBarItem() {
-        // 一键置顶
-        this.refs.pullList.scrollTo({y:0});
+        let PullList = this.refs.pullList;
+
+        if (PullList.scroll.scrollProperties.offset > 0) {      // 不在顶部
+            // 一键置顶
+            PullList.scrollTo({y:0});
+        }else {     // 在顶部
+
+            // 执行下拉刷新动画
+            // PullList.state.pullPan = new Animated.ValueXY({x: 0, y: this.topIndicatorHeight * -1});
+
+            // 加载最新数据
+            this.loadData();
+
+            // 关闭动画
+            setTimeout(() => {
+                PullList.resetDefaultXYHandler();
+            },1000);
+        }
     }
 
     // 返回左边按钮
@@ -343,30 +359,26 @@ export default class GDHome extends Component {
 
     // 根据网络状态决定是否渲染 listView
     renderListView() {
-        if(this.state.loaded === false) {
+        if(this.state.loaded === false) { // 无数据
             // 显示空白页
             return(
                 <NoDataView />
             );
-        }else{
+        }else{ // 有数据
             return(
-                <PullList   // 将ListView 改为 PullList
-                    ref="pullList"  // 一键置顶
-                    // 下拉刷新
-                    onPullRelease={(resolve) => this.loadData(resolve)}
-                    // 数据源 通过判断dataSource是否有变化,来判断是否要重新渲染
-                    dataSource={this.state.dataSource} 
-                    renderRow={this.renderRow.bind(this)}
-                    // 隐藏水平线
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.listViewStyle}
-                    initialListSize={7}
-                    // 返回 listView 头部
-                    renderHeader={this.renderHeader}
-                    // 上拉加载更多
-                    onEndReached={this.loadMore}
-                    onEndReachedThreshold={60}
-                    renderFooter={this.renderFooter}
+                <PullList                                               // 将ListView 改为 PullList
+                    ref="pullList"                                      // 一键置顶
+                    onPullRelease={(resolve) => this.loadData(resolve)} // 下拉刷新操作
+                    dataSource={this.state.dataSource}                  // 设置数据源
+                    renderRow={this.renderRow.bind(this)}               // 根据数据创建相应 cell
+                    showsHorizontalScrollIndicator={false}              // 隐藏水平指示器
+                    style={styles.listViewStyle}                        // 样式
+                    initialListSize={7}                                 // 优化：一次渲染几条数据
+                    renderHeader={this.renderHeader}                    // 设置头部视图
+                    onEndReached={this.loadMore}                        // 当接近底部特定距离时调用
+                    onEndReachedThreshold={60}                          // 当接近底部60时调用
+                    renderFooter={this.renderFooter}                    // 设置尾部视图
+                    removeClippedSubviews={true}                        // 优化
                 />
             );
         }
@@ -384,6 +396,16 @@ export default class GDHome extends Component {
     render() {
         return (
             <View style={styles.container}>
+                {/* 导航栏样式 */}
+                <CommunalNavBar
+                    leftItem = {() => this.renderLeftItem()}
+                    titleItem = {() => this.renderTitleItem()}
+                    rightItem = {() => this.renderRightItem()}
+                />
+
+                {/* 根据网络状态决定是否渲染 listView */}
+                {this.renderListView()}
+
                 {/* 初始化近半小时热门模态 */}
                 <Modal
                     animationType='slide'  // 动画 底部弹窗
@@ -419,16 +441,6 @@ export default class GDHome extends Component {
                         loadSiftData={(mall, cate) => this.loadSiftData(mall, cate)}
                     />
                 </Modal>
-
-                {/* 导航栏样式 */}
-                <CommunalNavBar
-                    leftItem = {() => this.renderLeftItem()}
-                    titleItem = {() => this.renderTitleItem()}
-                    rightItem = {() => this.renderRightItem()}
-                />
-
-                {/* 根据网络状态决定是否渲染 listView */}
-                {this.renderListView()}
             </View>
         );
     }

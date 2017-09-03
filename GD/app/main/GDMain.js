@@ -32,6 +32,9 @@ import HTTP from '../http/HTTPBase';
 // 引入 本地数据存储封装组件 (数据持久化)
 // import RealmStorage from '../storage/realmStorage';
 
+// 引入 公共导航组件
+// import NavigationBar from './GDNavigationBar';
+
 export default class GD extends Component {
     // ES6
     // 构造
@@ -111,27 +114,27 @@ export default class GD extends Component {
                 renderSelectedIcon = {() => <Image source={{uri:selectedImage}} style={styles.tabbarIconStyle} />}
                 onPress = {() => this.clickItem(selectedTab, subscription)}>
                 <Navigator
-                // 设置路由
-                initialRoute = {
-                    {
-                        name: selectedTab,
-                        component: component
+                    // 设置路由
+                    initialRoute = {
+                        {
+                            name: selectedTab,
+                            component: component
+                        }
                     }
-                }
 
-                // 设置导航动画
-                configureScene={(route) => this.setNavAnimationType(route)}
+                    // 设置导航动画
+                    configureScene={(route) => this.setNavAnimationType(route)}
 
-                renderScene = {
-                    (route, navigator) => {
+                    renderScene = {(route, navigator) => {
                         let Component = route.component;
                         return <Component
                                     {...route.params}
                                     navigator={navigator}
-                                    loadDataNumber={() => this.loadDataNumber()}
-                                />
-                    }
-                } />    
+                                    loadDataNumber={() => this.loadDataNumber()} />
+                    }}
+
+                    // navigationBar={NavigationBar}
+                />    
             </TabNavigator.Item>
         );
     }

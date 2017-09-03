@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
         width:width,
         borderBottomWidth:0.5,
         borderBottomColor:'gray',
-        marginLeft:15
+        marginLeft:15,
+        overflow:'hidden',
     },
     imageStyle: {
     	width:70,

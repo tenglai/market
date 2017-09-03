@@ -9,6 +9,7 @@ import {
     Text,
     TouchableOpacity,
     DeviceEventEmitter,
+    Image,
 } from 'react-native';
 
 // 导航器
@@ -37,7 +38,10 @@ export default class GDCommunalDetail extends Component {
             <TouchableOpacity
                 onPress={() => {this.pop()}}
             >
-                <Text>返回</Text>
+                <View style={{flexDirection:'row', alignItems:'center'}}>
+                    <Image source={{uri:'back'}} style={styles.navbarLeftItemStyle} />
+                    <Text>返回</Text>
+                </View>
             </TouchableOpacity>
         );
     }
@@ -62,11 +66,11 @@ export default class GDCommunalDetail extends Component {
 
                 {/* 初始化WebView */}
                 <WebView
-                    style={styles.webViewStyle}
-                    source={{uri:this.props.url, method: 'GET' }}
-                    javaScriptEnabled={true}
-                    domStorageEnabled={true}
-                    scalesPageToFit={false}
+                    style={styles.webViewStyle}                   // 样式
+                    source={{uri:this.props.url, method: 'GET' }} // 路径(uri:路径,method:请求方式)
+                    javaScriptEnabled={true}                      // 安卓平台允许javascript
+                    domStorageEnabled={true}                      // 安卓平台允许DOM本地存储
+                    scalesPageToFit={false}                       // 不允许网页缩放或用户改变缩放
                 />
             </View>
 		);
@@ -76,6 +80,12 @@ export default class GDCommunalDetail extends Component {
 const styles = StyleSheet.create({
     container: {
         flex:1
+    },
+
+    navbarLeftItemStyle: {
+        width:20,
+        height:20,
+        marginLeft:15,
     },
 
     webViewStyle: {
