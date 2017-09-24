@@ -1,53 +1,29 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * IOS
  */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View
 } from 'react-native';
+
+// 导入外部组件
+import CustomerComponents, { Navigator } from 'react-native-deprecated-custom-components';
+
+// 引入启动页面
+import LaunchImage from './app/component/LaunchImage';
 
 export default class XMGBuy extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
+      <Navigator
+            initialRoute={{name: '启动页', component:LaunchImage}}
+            renderScene={(route, navigator) =>{
+                let Component = route.component;
+                return <Component {...route.passProps} navigator={navigator} />
+            }}
+        />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
 
 AppRegistry.registerComponent('XMGBuy', () => XMGBuy);
