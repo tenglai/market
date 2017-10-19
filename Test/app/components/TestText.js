@@ -1,6 +1,6 @@
+/*测试组件*/
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
   Text,
   View
@@ -8,8 +8,12 @@ import {
  
 export default class TestText extends Component {
     render() {
+        // 获取 props 中的 value
+        const { value } = this.props;
+ 
         return (
-            <Text>Welcome to React Native</Text>
+            // 根据 value 改变内部文字
+            <Text>{value}</Text>
         );
     }
 }
