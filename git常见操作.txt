@@ -53,3 +53,9 @@ git merge master(要合并的分支)
 (2)git reset --hard 139dcfaa558e3276b30b6b2e5cbbb9c00bbdca96
 
 (3)git push -f -u origin master
+
+11.git 删除本地文件
+
+git rm raindow(文件夹名称) -r -f
+
+即 删除raindow文件夹及其下所有的文件
